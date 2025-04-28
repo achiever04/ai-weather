@@ -18,7 +18,7 @@ export default function WeatherDisplay({ weatherData, loading }: WeatherDisplayP
   if (!weatherData) {
     return (
       <div className="text-center p-10">
-        <p className="text-gray-600">Enter a location to get weather information</p>
+        <p className="text-gray-600">Enter a location to get weather information.</p>
       </div>
     );
   }
@@ -70,4 +70,4 @@ export default function WeatherDisplay({ weatherData, loading }: WeatherDisplayP
       </div>
     </div>
   );
-} 
+}
