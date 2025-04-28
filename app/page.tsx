@@ -26,7 +26,6 @@ export default function Home() {
     }
   };
 
-  // Optional: Load default location on first render
   useEffect(() => {
     handleSearchLocation('London');
   }, []);
@@ -53,11 +52,11 @@ export default function Home() {
           <p className="text-gray-700 mb-4">
             This application uses advanced AI models to provide accurate weather forecasts and intelligent
             insights about weather patterns. Our AI analyzes historical weather data, satellite imagery,
-            and atmospheric conditions to predict weather with higher accuracy than traditional methods.
+            and atmospheric conditions to predict weather with higher accuracy.
           </p>
           <p className="text-gray-700">
             The AI model continuously learns from new weather patterns and improves its predictions over time,
-            adapting to changing climate conditions and local weather phenomena.
+            adapting to changing climate conditions and local phenomena.
           </p>
         </div>
       </main>
@@ -66,7 +65,7 @@ export default function Home() {
         <div className="container mx-auto px-4 text-center">
           <p>© {new Date().getFullYear()} AI Weather Prediction | Created with Next.js</p>
           <p className="text-gray-400 text-sm mt-2">
-            Weather data provided for demonstration purposes only
+            Weather data provided for demonstration purposes only.
           </p>
         </div>
       </footer>
