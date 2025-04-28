@@ -12,6 +12,7 @@ export default function Header({ onSearchLocation }: HeaderProps) {
     e.preventDefault();
     if (location.trim()) {
       onSearchLocation(location);
+      setLocation(''); // Clear input after search
     }
   };
 
@@ -43,4 +44,4 @@ export default function Header({ onSearchLocation }: HeaderProps) {
       </div>
     </header>
   );
-} 
+}
