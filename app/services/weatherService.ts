@@ -6,14 +6,16 @@
 // const API_KEY = 'YOUR_API_KEY'; // Replace with actual API key for production
 // const BASE_URL = 'https://api.openweathermap.org/data/2.5';
 
+import axios from 'axios';
+
 export interface WeatherData {
   location: string;
   temperature: number;
   description: string;
-  feelsLike: number;
+  icon: string;
   humidity: number;
   windSpeed: number;
-  icon: string;
+  feelsLike: number;
   forecast: ForecastDay[];
 }
 
@@ -25,44 +27,39 @@ export interface ForecastDay {
   icon: string;
 }
 
-export const getWeatherData = async (location: string): Promise<WeatherData> => {
-  try {
-    // Using demo mode to avoid needing a real API key
-    // In a real application, you would use:
-    // const response = await axios.get(`${BASE_URL}/weather?q=${location}&units=metric&appid=${API_KEY}`);
-    
-    // For demo purposes, returning mock data
-    return getMockWeatherData(location);
-  } catch (error) {
-    console.error('Error fetching weather data:', error);
-    throw new Error('Failed to fetch weather data');
-  }
-};
+const API_KEY = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY;
+const BASE_URL = 'https://api.openweathermap.org/data/2.5';
 
-// Mock data for demo purposes
-const getMockWeatherData = (location: string): WeatherData => {
-  const currentDate = new Date();
-  const forecast = Array.from({ length: 5 }, (_, i) => {
-    const forecastDate = new Date();
-    forecastDate.setDate(currentDate.getDate() + i + 1);
-    
-    return {
-      date: forecastDate.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }),
-      minTemp: Math.round(15 + Math.random() * 5),
-      maxTemp: Math.round(20 + Math.random() * 10),
-      description: i % 2 === 0 ? 'Partly Cloudy' : 'Sunny',
-      icon: i % 2 === 0 ? '03d' : '01d'
-    };
-  });
+export async function getWeatherData(location: string): Promise<WeatherData> {
+  const currentWeatherUrl = `${BASE_URL}/weather?q=${location}&appid=${API_KEY}&units=metric`;
+  const forecastUrl = `${BASE_URL}/forecast?q=${location}&appid=${API_KEY}&units=metric`;
+
+  const [currentWeatherRes, forecastRes] = await Promise.all([
+    axios.get(currentWeatherUrl),
+    axios.get(forecastUrl),
+  ]);
+
+  const currentWeather = currentWeatherRes.data;
+  const forecastData = forecastRes.data.list;
+
+  const forecast: ForecastDay[] = forecastData
+    .filter((_: any, index: number) => index % 8 === 0)
+    .map((day: any) => ({
+      date: new Date(day.dt * 1000).toLocaleDateString('en-US', { weekday: 'short' }),
+      minTemp: Math.round(day.main.temp_min),
+      maxTemp: Math.round(day.main.temp_max),
+      description: day.weather[0].description,
+      icon: day.weather[0].icon,
+    }));
 
   return {
-    location,
-    temperature: Math.round(20 + Math.random() * 10),
-    description: 'Partly Cloudy',
-    feelsLike: Math.round(19 + Math.random() * 10),
-    humidity: Math.round(40 + Math.random() * 40),
-    windSpeed: Math.round(5 + Math.random() * 15),
-    icon: '03d',
-    forecast
+    location: currentWeather.name,
+    temperature: Math.round(currentWeather.main.temp),
+    description: currentWeather.weather[0].description,
+    icon: currentWeather.weather[0].icon,
+    humidity: currentWeather.main.humidity,
+    windSpeed: Math.round(currentWeather.wind.speed),
+    feelsLike: Math.round(currentWeather.main.feels_like),
+    forecast,
   };
-}; 
+}
